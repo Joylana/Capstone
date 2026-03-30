@@ -2,6 +2,8 @@ import tkinter as tk
 #from tkinter import *
 from tkinter import ttk
 
+
+
 root=tk.Tk()
 root.geometry('400x200')
 root.title('User Info Form')
@@ -11,21 +13,66 @@ feet_var=tk.StringVar()
 inches_var=tk.StringVar()
 
  
-# defining a function that will
-# get the name and password and 
-# print them on the screen
 def submit():
-
-    gender=gender_var.get()
-    feet=feet_var.get()
-    inches=inches_var.get()
-    
-    print("The gender is : " + gender)
-    print("The height is : " + feet + " cm" + inches + " cm")
-    
+    try:
+        feet = float(feet_var.get()) if feet_var.get() else 0
+        inches = float(inches_var.get()) if inches_var.get() else 0
+        height_cm = feet * 30.48 + inches * 2.54
+    except ValueError:
+        height_cm = ''
+    # Collect all input values
+    data = {
+        'Gender': gender_var.get(),
+        'Height': height_cm,
+        'Weight': weight_var.get(),
+        'BMI': bmi_var.get(),
+        'Physical_Activity': pa_var.get(),
+        'Smoking_Status': smoke_var.get(),
+        'Alcohol_Consumption': alc_var.get(),
+        'Diet': diet_var.get(),
+        'Blood_Pressure': bp_var.get(),
+        'Cholesterol': chol_var.get(),
+        'Diabetes': 1 if diabetes_var.get() == 'Yes' else 0,
+        'Hypertension': 1 if hyper_var.get() == 'Yes' else 0,
+        'Heart_Disease': 1 if heart_var.get() == 'Yes' else 0,
+        'Asthma': 1 if asthma_var.get() == 'Yes' else 0,
+        'Age': age_var.get()
+    }
+    import pandas as pd
+    from joblib import load
+    # Load model and preprocessor
+    loaded_model = load('/Users/alanajoymorrison/Desktop/Capstone/lrmodel.joblib')
+    print("model loaded...")
+    preprocessor = load('/Users/alanajoymorrison/Desktop/Capstone/preprocessor.joblib')
+    print("preprocessor loaded...")
+    # Create DataFrame for a single row
+    df = pd.DataFrame([data])
+    print("data loaded...")
+    # Preprocess
+    X = preprocessor.transform(df)
+    print("data processing...")
+    # Predict
+    prediction = loaded_model.predict(X)
+    # Show result in popup
+    from tkinter import messagebox
+    messagebox.showinfo('Prediction', f'Predicted Life Expectancy: {prediction[0]:.2f}')
+    # Reset fields
     gender_var.set("")
     feet_var.set("")
     inches_var.set("")
+    weight_var.set("")
+    bmi_var.set("")
+    pa_var.set('Select')
+    smoke_var.set('Select')
+    alc_var.set('Select')
+    diet_var.set('Select')
+    bp_var.set('Select')
+    chol_var.set("")
+    diabetes_var.set('Select')
+    hyper_var.set('Select')
+    heart_var.set('Select')
+    asthma_var.set('Select')
+    age_var.set("")
 
 def show():
     lbl.config(text=cb.get())
@@ -173,53 +220,3 @@ sub_btn.grid(row=15,column=1)
 root.mainloop()
 
 
-def submit():
-    # Collect all input values
-    data = {
-        'Gender': gender_var.get(),
-        'Height': str(int(feet_var.get()) * 30.48 + int(inches_var.get()) * 2.54) if feet_var.get().isdigit() and inches_var.get().isdigit() else '',
-        'Weight': weight_var.get(),
-        'BMI': bmi_var.get(),
-        'Physical_Activity': pa_var.get(),
-        'Smoking_Status': smoke_var.get(),
-        'Alcohol_Consumption': alc_var.get(),
-        'Diet': diet_var.get(),
-        'Blood_Pressure': bp_var.get(),
-        'Cholesterol': chol_var.get(),
-        'Diabetes': 1 if diabetes_var.get() == 'Yes' else 0,
-        'Hypertension': 1 if hyper_var.get() == 'Yes' else 0,
-        'Heart_Disease': 1 if heart_var.get() == 'Yes' else 0,
-        'Asthma': 1 if asthma_var.get() == 'Yes' else 0,
-        'Age': age_var.get()
-    }
-    import pandas as pd
-    from joblib import load
-    # Load model and preprocessor
-    loaded_model = load('../lrmodel.joblib')
-    preprocessor = load('../preprocessor.joblib')
-    # Create DataFrame for a single row
-    df = pd.DataFrame([data])
-    # Preprocess
-    X = preprocessor.transform(df)
-    # Predict
-    prediction = loaded_model.predict(X)
-    # Show result in popup
-    from tkinter import messagebox
-    messagebox.showinfo('Prediction', f'Predicted Life Expectancy: {prediction[0]:.2f}')
-    # Reset fields
-    gender_var.set("")
-    feet_var.set("")
-    inches_var.set("")
-    weight_var.set("")
-    bmi_var.set("")
-    pa_var.set('Select')
-    smoke_var.set('Select')
-    alc_var.set('Select')
-    diet_var.set('Select')
-    bp_var.set('Select')
-    chol_var.set("")
-    diabetes_var.set('Select')
-    hyper_var.set('Select')
-    heart_var.set('Select')
-    asthma_var.set('Select')
-    age_var.set("")
