@@ -394,8 +394,8 @@ def do_submit():
     try:
         import pandas as pd  # type: ignore
         from joblib import load  # type: ignore
-        loaded_model = load("/Users/alanajoymorrison/Desktop/Capstone/lrmodel.joblib")
-        preprocessor = load("/Users/alanajoymorrison/Desktop/Capstone/preprocessor.joblib")
+        loaded_model = load("lrmodel.joblib")
+        preprocessor = load("preprocessor.joblib")
         df = pd.DataFrame([data])
         X  = preprocessor.transform(df)
         prediction = loaded_model.predict(X)
